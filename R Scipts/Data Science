@@ -1,5 +1,6 @@
 
-require(e1071) #Holds the Naive Bayes Classifier (Classification Technique)
+#Holds the Naive Bayes Classifier (Classification Technique)
+require(e1071) 
 Train <- read.csv(file.choose())
 Test <- read.csv(file.choose())
 
