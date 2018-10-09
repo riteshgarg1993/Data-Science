@@ -1,0 +1,53 @@
+#Create a Time Series in R
+ts (inputData, frequency = 4, start = c(1959, 2)) # frequency 4 => Quarterly Data
+ts (1:10, frequency = 12, start = 1990) # freq 12 => Monthly data. 
+ts (inputData, start=c(2009), end=c(2014), frequency=1) # Yearly Data
+
+#A multiplicative time series can be converted to additive by taking a log of the time series
+additiveTS <- log (multiplcativeTS)  # often converts multiplicative to additive time series
+
+#Extract the trend, seasonality and error
+decomposedRes <- decompose(tsData, type="mult") # use type = "additive" for additive components
+plot (decomposedRes) # see plot of decomposed data
+stlRes <- stl(tsData, s.window = "periodic")
+
+#Create lags of a time-series
+laggedTS <- lag(tsData, 3) # shifted 3 periods earlier. Use `-3` to shift by 3 periods forward.
+myDf <- slide(myDf, "x", NewVar = "xLag1", slideBy = -1)  # create lag1 variable
+myDf <- slide(myDf, "x", NewVar = "xLead1", slideBy = 1)  # create lead1 variable
+
+#Both acf() and pacf() generates plots by default
+acfRes <- acf(AirPassengers) # autocorrelation
+pacfRes <- pacf(AirPassengers)  # partial autocorrelation
+ccfRes <- ccf(mdeaths, fdeaths, ylab = "cross-correlation") # computes cross correlation between 2 timeseries.
+
+#De-trend a time series
+trModel <- lm(JohnsonJohnson ~ c(1:length(JohnsonJohnson)))
+plot(resid(trModel), type="l")  # resid(trModel) contains the de-trended series.
+
+#De-seasonalize a time series in R
+library(forecast)
+ts.stl <- stl(TS,"periodic")  # decompose the TS
+ts.sa <- seasadj(ts.stl)  # de-seasonalize
+plot(AirPassengers, type="l")  # original series
+plot(ts.sa, type="l")  # seasonal adjusted
+# seasonal frequency set as 12 for monthly data
+seasonplot(ts.sa, 12, col=rainbow(12), year.labels=TRUE, main="Seasonal plot: Airpassengers")
+
+#Test if a time series is stationary
+library(tseries)
+adf.test(tsData) # p-value < 0.05 indicates the TS is stationary
+kpss.test(tsData)
+
+# Seasonal Differencing
+nsdiffs(AirPassengers)  # number for seasonal differencing needed
+#> 1
+AirPassengers_seasdiff <- diff(AirPassengers, lag=frequency(AirPassengers), differences=1)  # seasonal differencing
+plot(ap_seasdiff, type="l", main="Seasonally Differenced")  # still not stationary!
+
+#Make a time series stationary
+# Make it stationary
+ndiffs(AirPassengers_seasdiff)  # number of differences need to make it stationary
+#> 1 
+stationaryTS <- diff(AirPassengers_seasdiff, differences= 1)
+plot(stationaryTS, type="l", main="Differenced and Stationary")  # appears to be stationary
